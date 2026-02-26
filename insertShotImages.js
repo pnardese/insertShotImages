@@ -85,8 +85,13 @@ function insertShotImages() {
 
     if (file) {
       sheet.setRowHeight(row, CONFIG.ROW_HEIGHT);
-      var blob = fetchThumbnail_(file);
-      sheet.insertImage(blob, frameColIdx, row, 2, 2);
+      var blob    = fetchThumbnail_(file);
+      var dataUrl = 'data:image/jpeg;base64,' + Utilities.base64Encode(blob.getBytes());
+      var cellImage = SpreadsheetApp.newCellImage()
+        .setSourceUrl(dataUrl)
+        .setAltTextTitle(name)
+        .build();
+      sheet.getRange(row, frameColIdx).setValue(cellImage);
       inserted++;
     } else {
       missing.push(name);
@@ -103,9 +108,12 @@ function insertShotImages() {
 function clearAllImages() {
   var sheet = getSheet_();
   if (!sheet) return;
-  var images = sheet.getImages();
-  images.forEach(function(img) { img.remove(); });
-  SpreadsheetApp.getUi().alert('All images removed from sheet.');
+  var headers     = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var frameColIdx = headers.indexOf('Frame') + 1;
+  if (frameColIdx === 0) { SpreadsheetApp.getUi().alert('Column "Frame" not found.'); return; }
+  var lastRow = sheet.getLastRow();
+  if (lastRow >= 2) sheet.getRange(2, frameColIdx, lastRow - 1, 1).clearContent();
+  SpreadsheetApp.getUi().alert('Images cleared from Frame column.');
 }
 
 // ---------------------------------------------------------------------------
@@ -135,12 +143,38 @@ function getDriveFolder_() {
 }
 
 /**
- * Fetches a resized thumbnail from Google Drive to stay within the 2MB blob limit.
- * sz=w320 requests a max-width-320px version; adjust to taste.
+ * Fetches a JPEG thumbnail for a Drive file, staying within the 2MB blob limit.
+ *
+ * Uses the file's thumbnailLink (lh3.googleusercontent.com) with the -rj suffix
+ * to force JPEG output and avoid "unsupported blob format" errors from WebP.
+ * Falls back to the /thumbnail endpoint if no thumbnailLink is available yet.
  */
 function fetchThumbnail_(file) {
-  var url = 'https://drive.google.com/thumbnail?id=' + file.getId() + '&sz=w320';
-  return UrlFetchApp.fetch(url).getBlob().setName(file.getName());
+  var fileId = file.getId();
+  var token  = ScriptApp.getOAuthToken();
+  var auth   = { headers: { Authorization: 'Bearer ' + token } };
+
+  // Retrieve the thumbnailLink from Drive metadata
+  var meta = JSON.parse(
+    UrlFetchApp.fetch(
+      'https://www.googleapis.com/drive/v3/files/' + fileId + '?fields=thumbnailLink',
+      auth
+    ).getContentText()
+  );
+
+  var thumbUrl;
+  if (meta.thumbnailLink) {
+    // lh3 suffix: s320 = 320px wide, rj = return JPEG (avoids WebP)
+    thumbUrl = meta.thumbnailLink.replace(/=s\d+$/, '=s320-rj');
+  } else {
+    // Fallback: Drive thumbnail endpoint (thumbnail may not exist yet for new uploads)
+    thumbUrl = 'https://drive.google.com/thumbnail?id=' + fileId + '&sz=w320';
+  }
+
+  return UrlFetchApp.fetch(thumbUrl, auth)
+    .getBlob()
+    .setContentType('image/jpeg')
+    .setName(file.getName());
 }
 
 /**
@@ -155,10 +189,10 @@ function findImageByName_(imageMap, name) {
 }
 
 /**
- * Removes all over-grid images whose anchor cell is in the given column.
+ * Clears in-cell images from the given column (rows 2 onward).
+ * In-cell images are stored as cell values, so clearContent() removes them.
  */
 function clearColumnImages_(sheet, col) {
-  sheet.getImages().forEach(function(img) {
-    if (img.getAnchorCell().getColumn() === col) img.remove();
-  });
+  var lastRow = sheet.getLastRow();
+  if (lastRow >= 2) sheet.getRange(2, col, lastRow - 1, 1).clearContent();
 }
