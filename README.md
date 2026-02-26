@@ -4,8 +4,10 @@ Google Apps Script that inserts JPG thumbnails into a Google Sheet shot list, ma
 
 ## Prerequisites
 
-- A Google Sheet populated by importing a tab-delimited `.txt` file
-- The `imgs/` folder uploaded to Google Drive
+- A Google Sheet populated by importing a TAB-delimited `.txt` file exported from either:
+  - [vfx_turnover](https://github.com/pnardese/vfx_turnover) CLI — run `vfx-turnover -t`
+  - [web-vfx-turnover](https://pnardese.github.io/web-vfx-turnover/) web app — use the **DB Export** button
+- The `imgs/` folder uploaded to Google Drive (produced by the frame export step in either tool)
 
 ## Setup
 
@@ -20,7 +22,7 @@ https://drive.google.com/drive/folders/YOUR_FOLDER_ID_HERE
 
 ### 2. Import the shot list into Google Sheets
 
-In Google Sheets: **File > Import**, select your `.txt` file, choose **Tab** as the separator type.
+Export the TAB-delimited file from [vfx_turnover](https://github.com/pnardese/vfx_turnover) (`vfx-turnover -t`) or the [web-vfx-turnover](https://pnardese.github.io/web-vfx-turnover/) **DB Export** button, then in Google Sheets: **File > Import**, select the `.txt` file, choose **Tab** as the separator type.
 
 ### 3. Install the script
 
