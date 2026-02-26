@@ -1,5 +1,7 @@
 # VFX Shot Image Inserter
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Google Apps Script that inserts JPG thumbnails into a Google Sheet shot list, matched by shot name.
 
 ## Prerequisites
