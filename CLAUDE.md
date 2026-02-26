@@ -8,10 +8,11 @@ Google Apps Script utilities for a VFX shot list workflow. The main script (`ins
 
 ## Workflow
 
-1. Import a tab-delimited `.txt` shot list into Google Sheets (File > Import, Tab separator)
-2. Upload the `imgs/` folder to Google Drive
-3. Paste `insertShotImages.js` into Extensions > Apps Script, set `DRIVE_FOLDER_ID`, save
-4. Run `onOpen` once to authorize, then use **VFX Tools > Insert Shot Images**
+1. Export a TAB-delimited `.txt` shot list from [vfx_turnover](https://github.com/pnardese/vfx_turnover) (`vfx-turnover -t`) or the [web-vfx-turnover](https://pnardese.github.io/web-vfx-turnover/) **DB Export** button
+2. Import the `.txt` file into Google Sheets (File > Import, Tab separator)
+3. Upload the `imgs/` folder to Google Drive (produced by the frame export step in either tool)
+4. Paste `insertShotImages.js` into Extensions > Apps Script, set `DRIVE_FOLDER_ID`, save
+5. Run `onOpen` once to authorize, then use **VFX Tools > Insert Shot Images**
 
 ## Sheet Structure
 
