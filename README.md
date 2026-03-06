@@ -42,7 +42,7 @@ Run `onOpen` once from the function selector and accept the permission prompt (t
 
 Refresh the Google Sheet. A new menu **VFX Tools** appears in the menu bar.
 
-- **VFX Tools > Insert Shot Images** — inserts thumbnails into the `Frame` column, matched by shot name from the `Name` column
+- **VFX Tools > Insert Shot Images** — inserts thumbnails into the `Thumbnail` column, matched by shot name from the `Name` column
 - **VFX Tools > Clear All Images** — removes all inserted images
 
 Re-running *Insert Shot Images* is safe: existing images are cleared first.
@@ -56,7 +56,7 @@ At the top of `insertShotImages.js`:
 | `DRIVE_FOLDER_ID` | — | ID of the Drive folder containing the JPGs |
 | `SHEET_NAME` | `''` | Sheet tab name; empty = active sheet |
 | `ROW_HEIGHT` | `80` | Row height in px for rows with an image |
-| `FRAME_COLUMN_WIDTH` | `150` | Width in px of the Frame column |
+| `FRAME_COLUMN_WIDTH` | `150` | Width in px of the Thumbnail column |
 
 ## How matching works
 

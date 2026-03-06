@@ -2,7 +2,7 @@
  * Shot Image Inserter — Google Apps Script
  *
  * Reads JPG thumbnails from a Google Drive folder and inserts them as
- * floating images into the "Frame" column, matched by shot name from column "Name".
+ * floating images into the "Thumbnail" column, matched by shot name from column "Name".
  *
  * Workflow:
  *  1. Upload your imgs/ folder to Google Drive (drag & drop in browser, or
@@ -20,7 +20,7 @@ var CONFIG = {
   DRIVE_FOLDER_ID:    'YOUR_FOLDER_ID_HERE',  // ← replace with your Drive folder ID
   SHEET_NAME:         '',                      // leave empty to use the active sheet
   ROW_HEIGHT:         80,                      // px — height of rows that receive an image
-  FRAME_COLUMN_WIDTH: 150,                     // px — width of the Frame column
+  FRAME_COLUMN_WIDTH: 150,                     // px — width of the Thumbnail column
 };
 
 // ---------------------------------------------------------------------------
@@ -52,20 +52,20 @@ function insertShotImages() {
   // Locate header columns by name (robust to column reordering)
   var headers      = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
   var nameColIdx   = headers.indexOf('Name')  + 1;  // 1-based; 0 means not found
-  var frameColIdx  = headers.indexOf('Frame') + 1;
+  var frameColIdx  = headers.indexOf('Thumbnail') + 1;
 
   if (nameColIdx === 0) {
     ui.alert('Column "Name" not found in row 1. Make sure the tab-delimited file was imported with headers.');
     return;
   }
   if (frameColIdx === 0) {
-    ui.alert('Column "Frame" not found in row 1.');
+    ui.alert('Column "Thumbnail" not found in row 1.');
     return;
   }
 
   sheet.setColumnWidth(frameColIdx, CONFIG.FRAME_COLUMN_WIDTH);
 
-  // Remove any images already in the Frame column (safe to re-run)
+  // Remove any images already in the Thumbnail column (safe to re-run)
   clearColumnImages_(sheet, frameColIdx);
 
   // Read all shot names and insert matching images
@@ -109,11 +109,11 @@ function clearAllImages() {
   var sheet = getSheet_();
   if (!sheet) return;
   var headers     = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  var frameColIdx = headers.indexOf('Frame') + 1;
-  if (frameColIdx === 0) { SpreadsheetApp.getUi().alert('Column "Frame" not found.'); return; }
+  var frameColIdx = headers.indexOf('Thumbnail') + 1;
+  if (frameColIdx === 0) { SpreadsheetApp.getUi().alert('Column "Thumbnail" not found.'); return; }
   var lastRow = sheet.getLastRow();
   if (lastRow >= 2) sheet.getRange(2, frameColIdx, lastRow - 1, 1).clearContent();
-  SpreadsheetApp.getUi().alert('Images cleared from Frame column.');
+  SpreadsheetApp.getUi().alert('Images cleared from Thumbnail column.');
 }
 
 // ---------------------------------------------------------------------------
